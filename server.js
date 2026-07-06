@@ -34,7 +34,9 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes);
-
+app.get("/healthz", (req, res) => {
+  res.status(200).send("OK");
+});
 console.log("UPLOAD PATH:", path.join(__dirname, "uploads"));
 // 🔥 serve uploads folder (IMPORTANT FIX)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
