@@ -1,6 +1,7 @@
 {
-  "name": "hridaya-admin-backend",
+  "name": "hridaya-customer-backend",
   "version": "1.0.0",
+
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -14,7 +15,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/leoking01996/hridaya-customer-backend/issues"
   },
