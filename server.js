@@ -1,49 +1,144 @@
-// Load environment variables,So you can use.env file
 require("dotenv").config();
 
-const path = require("path");
-// express → creates server
 const express = require("express");
-
-// mongoose → connects MongoDB
 const mongoose = require("mongoose");
-
-// cors → allows frontend to talk to backend
 const cors = require("cors");
+const path = require("path");
 
-// Creates your backend server instance
+const authRoutes = require("./routes/auth");
+
 const app = express();
 
-// Middleware
-// Allows requests from frontend
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:8080"],
-  credentials: true
+const PORT = process.env.PORT || 5000;
+
+
+// ===============================
+// CORS ALLOW ALL
+// ===============================
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS"
+    ],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization"
+    ]
+  })
+);
+
+
+// IMPORTANT FOR PREFLIGHT
+app.options("*", cors());
+
+
+// ===============================
+// BODY PARSER
+// ===============================
+
+app.use(express.json({
+  limit:"10mb"
 }));
 
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Hridaya Customer Backend is Running 🚀"
-  });
+app.use(express.urlencoded({
+  extended:true,
+  limit:"10mb"
+}));
+
+
+
+// ===============================
+// LOGGER
+// ===============================
+
+app.use((req,res,next)=>{
+
+ console.log(
+   "REQUEST:",
+   req.method,
+   req.originalUrl
+ );
+
+ console.log(
+   "ORIGIN:",
+   req.headers.origin
+ );
+
+ next();
+
 });
-// app.use(express.json());
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// DB ------------
-// DB ------------
+
+
+// ===============================
+// UPLOADS
+// ===============================
+
+app.use(
+ "/uploads",
+ express.static(
+   path.join(__dirname,"uploads")
+ )
+);
+
+
+
+// ===============================
+// ROUTES
+// ===============================
+
+app.use(
+ "/api/auth",
+ authRoutes
+);
+
+
+
+app.get("/",(req,res)=>{
+
+ res.json({
+   success:true,
+   message:"Hridaya Customer Backend is Running 🚀"
+ });
+
+});
+
+
+
+// ===============================
+// DATABASE
+// ===============================
+
+
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+.then(()=>{
 
-// Routes
-const authRoutes = require("./routes/auth");
-app.use("/api/auth", authRoutes);
+ console.log("MongoDB Connected");
 
-console.log("UPLOAD PATH:", path.join(__dirname, "uploads"));
-// 🔥 serve uploads folder (IMPORTANT FIX)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+
+ app.listen(PORT,()=>{
+
+  console.log(
+   `Server running on ${PORT}`
+  );
+
+ });
+
+
+})
+.catch(err=>{
+
+ console.log(
+  "Mongo Error:",
+  err.message
+ );
+
+});

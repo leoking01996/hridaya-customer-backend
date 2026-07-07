@@ -1,22 +1,10 @@
 {
   "name": "hridaya-customer-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/leoking01996/hridaya-customer-backend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/leoking01996/hridaya-customer-backend/issues"
-  },
-  "homepage": "https://github.com/leoking01996/hridaya-customer-backend#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
