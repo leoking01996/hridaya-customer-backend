@@ -1,11 +1,9 @@
 {
   "name": "hridaya-customer-backend",
   "version": "1.0.0",
-
   "description": "",
   "main": "server.js",
   "scripts": {
-   
     "start": "node server.js"
   },
   "repository": {
@@ -15,7 +13,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/leoking01996/hridaya-customer-backend/issues"
   },
