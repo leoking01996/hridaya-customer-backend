@@ -21,6 +21,12 @@ app.use(cors({
   credentials: true
 }));
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Hridaya Customer Backend is Running 🚀"
+  });
+});
 // app.use(express.json());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
