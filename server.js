@@ -1,144 +1,37 @@
 require("dotenv").config();
 
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const path = require("path");
-
-const authRoutes = require("./routes/auth");
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
-
-
-// ===============================
-// CORS ALLOW ALL
-// ===============================
-
-app.use(
-  cors({
+app.use(cors({
     origin: true,
-    credentials: true,
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS"
-    ],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization"
-    ]
-  })
-);
+    credentials: true
+}));
 
-
-// IMPORTANT FOR PREFLIGHT
 app.options("*", cors());
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// ===============================
-// BODY PARSER
-// ===============================
+mongoose.connect(process.env.MONGO_URI);
 
-app.use(express.json({
-  limit:"10mb"
-}));
+const authRoutes = require("./routes/auth");
 
-app.use(express.urlencoded({
-  extended:true,
-  limit:"10mb"
-}));
+app.use("/api/auth", authRoutes);
 
-
-
-// ===============================
-// LOGGER
-// ===============================
-
-app.use((req,res,next)=>{
-
- console.log(
-   "REQUEST:",
-   req.method,
-   req.originalUrl
- );
-
- console.log(
-   "ORIGIN:",
-   req.headers.origin
- );
-
- next();
-
+app.get("/", (req, res) => {
+    res.json({
+        success: true,
+        message: "Hridaya Customer Backend is Running 🚀"
+    });
 });
 
+const PORT = process.env.PORT || 5000;
 
-
-// ===============================
-// UPLOADS
-// ===============================
-
-app.use(
- "/uploads",
- express.static(
-   path.join(__dirname,"uploads")
- )
-);
-
-
-
-// ===============================
-// ROUTES
-// ===============================
-
-app.use(
- "/api/auth",
- authRoutes
-);
-
-
-
-app.get("/",(req,res)=>{
-
- res.json({
-   success:true,
-   message:"Hridaya Customer Backend is Running 🚀"
- });
-
-});
-
-
-
-// ===============================
-// DATABASE
-// ===============================
-
-
-mongoose.connect(process.env.MONGO_URI)
-.then(()=>{
-
- console.log("MongoDB Connected");
-
-
- app.listen(PORT,()=>{
-
-  console.log(
-   `Server running on ${PORT}`
-  );
-
- });
-
-
-})
-.catch(err=>{
-
- console.log(
-  "Mongo Error:",
-  err.message
- );
-
+app.listen(PORT, () => {
+    console.log("Server running");
 });
