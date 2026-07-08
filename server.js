@@ -12,12 +12,18 @@ app.use(cors({
     credentials: true
 }));
 
-app.options("/*", cors());
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(process.env.MONGO_URI);
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => {
+    console.error("MongoDB Error:", err);
+    process.exit(1);
+  });
 
 const authRoutes = require("./routes/auth");
 
