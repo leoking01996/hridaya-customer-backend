@@ -16,7 +16,11 @@ const Order = require("../models/Order");
 
 
 
-
+router.post(
+    "/addProduct",
+    upload.single("image"),
+    addProduct
+);
 
 // ================= REGISTER (WITH OTP) =================
 router.post("/register", async (req, res) => {

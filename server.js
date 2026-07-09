@@ -60,7 +60,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -72,7 +72,8 @@ mongoose
 
 const authRoutes = require("./routes/auth");
 
-app.use("/api/auth", authRoutes);
+// app.use("/api/auth", authRoutes);
+app.use("/api/auth", require("./routes/auth"));
 
 app.get("/", (req, res) => {
     res.json({
