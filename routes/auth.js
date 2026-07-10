@@ -12,6 +12,7 @@ const Variant = require("../models/variant");
 const Cart = require("../models/cart");
 const calculateCoupon = require("../utils/calculateCoupon");
 const Order = require("../models/Order");
+const { default: Contact } = require("../models/Contact");
 
 
 
