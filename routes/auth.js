@@ -131,16 +131,28 @@ router.post("/contact", verifyToken, async (req, res) => {
   }
 });
 // sendmessage contact
-router.get("/contacts", verifyToken, async (req, res) => {
+router.post("/sendMessage", verifyToken, async (req, res) => {
   try {
-    const contacts = await Contact.find().sort({ createdAt: -1 });
+    const { full_name, email, phone, subject, message } = req.body;
 
-    return res.status(200).json({
+    const contact = new Contact({
+      user_id: req.user.id,
+      full_name,
+      email,
+      phone,
+      subject,
+      message,
+    });
+
+    await contact.save();
+
+    return res.status(201).json({
       success: true,
-      data: contacts,
+      message: "Message sent successfully.",
+      data: contact,
     });
   } catch (error) {
-    console.log("GET CONTACTS ERROR:", error);
+    console.log("SAVE CONTACT ERROR:", error);
 
     return res.status(500).json({
       success: false,
