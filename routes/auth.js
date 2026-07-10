@@ -16,11 +16,11 @@ const Order = require("../models/Order");
 
 
 
-router.post(
-    "/addProduct",
-    upload.single("image"),
-    addProduct
-);
+// router.post(
+//     "/Product",
+//     upload.single("image"),
+//     addProduct
+// );
 
 // ================= REGISTER (WITH OTP) =================
 router.post("/register", async (req, res) => {
@@ -75,6 +75,76 @@ router.post("/register", async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message
+    });
+  }
+});
+
+
+// sendmessage contact
+router.get("/contacts", verifyToken, async (req, res) => {
+  try {
+    const contacts = await Contact.find().sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: contacts,
+    });
+  } catch (error) {
+    console.log("GET CONTACTS ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+
+// Save Contact Message
+router.post("/contact", verifyToken, async (req, res) => {
+  try {
+    const { full_name, email, phone, subject, message } = req.body;
+
+    const contact = new Contact({
+      user_id: req.user.id,
+      full_name,
+      email,
+      phone,
+      subject,
+      message,
+    });
+
+    await contact.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Message sent successfully.",
+      data: contact,
+    });
+  } catch (error) {
+    console.log("SAVE CONTACT ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+// sendmessage contact
+router.get("/contacts", verifyToken, async (req, res) => {
+  try {
+    const contacts = await Contact.find().sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      data: contacts,
+    });
+  } catch (error) {
+    console.log("GET CONTACTS ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 });
