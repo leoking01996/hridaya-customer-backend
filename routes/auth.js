@@ -12,238 +12,66 @@ const Variant = require("../models/variant");
 const Cart = require("../models/cart");
 const calculateCoupon = require("../utils/calculateCoupon");
 const Order = require("../models/Order");
-const { default: Contact } = require("../models/Contact");
+const Contact = require("../models/Contact");
 
 
 
 
-// router.post(
-//     "/Product",
-//     upload.single("image"),
-//     addProduct
-// );
+
 
 // ================= REGISTER (WITH OTP) =================
-// router.post("/register", async (req, res) => {
-//   try {
-//     const { full_name, email, password } = req.body;
-
-//     // validation
-//     if (!full_name || !email || !password) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "All fields are required"
-//       });
-//     }
-
-//     // check existing user
-//     const existingUser = await User.findOne({ email });
-//     if (existingUser) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "User already exists"
-//       });
-//     }
-
-//     // hash password
-//     const hashedPassword = await bcrypt.hash(password, 10);
-
-//     // generate OTP
-//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-//     // save user with OTP
-//     const newUser = new User({
-//       full_name,
-//       email,
-//       password: hashedPassword,
-//       otp,
-//       otpExpires: Date.now() + 5 * 60 * 1000, // 5 minutes
-//       isVerified: false
-//     });
-
-//     await newUser.save();
-
-//     // send OTP email
-//     await sendOtpEmail(email, otp);
-
-//     return res.status(201).json({
-//       success: true,
-//       message: "OTP sent to email"
-//     });
-
-//   } catch (error) {
-//     console.log("REGISTER ERROR:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// });
-
 router.post("/register", async (req, res) => {
   try {
-    console.log("===== REGISTER START =====");
-
     const { full_name, email, password } = req.body;
 
-    // Validation
+    // validation
     if (!full_name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "All fields are required"
       });
     }
 
-    console.log("Checking existing user...");
-
-    // Check existing user
+    // check existing user
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "User already exists",
+        message: "User already exists"
       });
     }
 
-    console.log("Hashing password...");
-
-    // Hash password
+    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate OTP
+    // generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    console.log("Saving user...");
-
-    // Save user
+    // save user with OTP
     const newUser = new User({
       full_name,
       email,
       password: hashedPassword,
       otp,
-      otpExpires: Date.now() + 5 * 60 * 1000,
-      isVerified: false,
+      otpExpires: Date.now() + 5 * 60 * 1000, // 5 minutes
+      isVerified: false
     });
 
     await newUser.save();
 
-    console.log("User saved successfully.");
-
-    // Send email
-    try {
-      console.log("Sending OTP email...");
-
-      await sendOtpEmail(email, otp);
-
-      console.log("OTP email sent successfully.");
-
-      return res.status(201).json({
-        success: true,
-        message: "OTP sent successfully.",
-      });
-
-    } catch (emailError) {
-
-      console.error("EMAIL ERROR:", emailError);
-
-      // Don't let email failure hang the request
-      return res.status(201).json({
-        success: true,
-        message: "User registered, but OTP email could not be sent.",
-        otp, // Remove this in production
-      });
-    }
-
-  } catch (error) {
-
-    console.error("REGISTER ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
-
-// sendmessage contact
-router.get("/contacts", verifyToken, async (req, res) => {
-  try {
-    const contacts = await Contact.find().sort({ createdAt: -1 });
-
-    return res.status(200).json({
-      success: true,
-      data: contacts,
-    });
-  } catch (error) {
-    console.log("GET CONTACTS ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
-
-// Save Contact Message
-router.post("/contact", verifyToken, async (req, res) => {
-  try {
-    const { full_name, email, phone, subject, message } = req.body;
-
-    const contact = new Contact({
-      user_id: req.user.id,
-      full_name,
-      email,
-      phone,
-      subject,
-      message,
-    });
-
-    await contact.save();
+    // send OTP email
+    // await sendOtpEmail(email, otp);
 
     return res.status(201).json({
       success: true,
-      message: "Message sent successfully.",
-      data: contact,
+      message: "OTP sent to email"
     });
-  } catch (error) {
-    console.log("SAVE CONTACT ERROR:", error);
 
+  } catch (error) {
+    console.log("REGISTER ERROR:", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
-    });
-  }
-});
-// sendmessage contact
-router.post("/sendMessage", verifyToken, async (req, res) => {
-  try {
-    const { full_name, email, phone, subject, message } = req.body;
-
-    const contact = new Contact({
-      user_id: req.user.id,
-      full_name,
-      email,
-      phone,
-      subject,
-      message,
-    });
-
-    await contact.save();
-
-    return res.status(201).json({
-      success: true,
-      message: "Message sent successfully.",
-      data: contact,
-    });
-  } catch (error) {
-    console.log("SAVE CONTACT ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
+      message: error.message
     });
   }
 });
@@ -755,8 +583,36 @@ router.post("/checkout", verifyToken, async (req, res) => {
     });
   }
 });
+// Save Contact Message
+router.post("/sendMessage", verifyToken, async (req, res) => {
+  try {
+    const { full_name, email, phone, subject, message } = req.body;
 
+    const contact = new Contact({
+      user_id: req.user.id,
+      full_name,
+      email,
+      phone,
+      subject,
+      message,
+    });
 
+    await contact.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Message sent successfully.",
+      data: contact,
+    });
+  } catch (error) {
+    console.log("SAVE CONTACT ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 router.post("/place-order", verifyToken, async (req, res) => {
   try {
     const user_id = req.user.id;

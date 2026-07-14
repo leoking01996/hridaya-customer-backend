@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const contactSchema = new mongoose.Schema(
   {
@@ -7,39 +7,15 @@ const contactSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
-    full_name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    phone: {
-      type: String,
-      default: "",
-    },
-
-    subject: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    message: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    full_name: String,
+    email: String,
+    phone: String,
+    subject: String,
+    message: String,
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("Contact", contactSchema);
+module.exports = mongoose.model("Contact", contactSchema);
