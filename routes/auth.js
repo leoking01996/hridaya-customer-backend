@@ -24,58 +24,144 @@ const { default: Contact } = require("../models/Contact");
 // );
 
 // ================= REGISTER (WITH OTP) =================
+// router.post("/register", async (req, res) => {
+//   try {
+//     const { full_name, email, password } = req.body;
+
+//     // validation
+//     if (!full_name || !email || !password) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "All fields are required"
+//       });
+//     }
+
+//     // check existing user
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "User already exists"
+//       });
+//     }
+
+//     // hash password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // generate OTP
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+//     // save user with OTP
+//     const newUser = new User({
+//       full_name,
+//       email,
+//       password: hashedPassword,
+//       otp,
+//       otpExpires: Date.now() + 5 * 60 * 1000, // 5 minutes
+//       isVerified: false
+//     });
+
+//     await newUser.save();
+
+//     // send OTP email
+//     await sendOtpEmail(email, otp);
+
+//     return res.status(201).json({
+//       success: true,
+//       message: "OTP sent to email"
+//     });
+
+//   } catch (error) {
+//     console.log("REGISTER ERROR:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// });
+
 router.post("/register", async (req, res) => {
   try {
+    console.log("===== REGISTER START =====");
+
     const { full_name, email, password } = req.body;
 
-    // validation
+    // Validation
     if (!full_name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required"
+        message: "All fields are required",
       });
     }
 
-    // check existing user
+    console.log("Checking existing user...");
+
+    // Check existing user
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "User already exists"
+        message: "User already exists",
       });
     }
 
-    // hash password
+    console.log("Hashing password...");
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // generate OTP
+    // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // save user with OTP
+    console.log("Saving user...");
+
+    // Save user
     const newUser = new User({
       full_name,
       email,
       password: hashedPassword,
       otp,
-      otpExpires: Date.now() + 5 * 60 * 1000, // 5 minutes
-      isVerified: false
+      otpExpires: Date.now() + 5 * 60 * 1000,
+      isVerified: false,
     });
 
     await newUser.save();
 
-    // send OTP email
-    await sendOtpEmail(email, otp);
+    console.log("User saved successfully.");
 
-    return res.status(201).json({
-      success: true,
-      message: "OTP sent to email"
-    });
+    // Send email
+    try {
+      console.log("Sending OTP email...");
+
+      await sendOtpEmail(email, otp);
+
+      console.log("OTP email sent successfully.");
+
+      return res.status(201).json({
+        success: true,
+        message: "OTP sent successfully.",
+      });
+
+    } catch (emailError) {
+
+      console.error("EMAIL ERROR:", emailError);
+
+      // Don't let email failure hang the request
+      return res.status(201).json({
+        success: true,
+        message: "User registered, but OTP email could not be sent.",
+        otp, // Remove this in production
+      });
+    }
 
   } catch (error) {
-    console.log("REGISTER ERROR:", error);
+
+    console.error("REGISTER ERROR:", error);
+
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 });
