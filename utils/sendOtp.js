@@ -21,13 +21,13 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 
-  family: 4, // Force IPv4
+
 });
 
 const sendOtpEmail = async (email, otp) => {
   console.log("Connecting to Gmail...");
 
-  await transporter.verify();
+  // await transporter.verify();
 
   console.log("SMTP Connected");
 
